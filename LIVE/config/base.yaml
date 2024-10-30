@@ -1,0 +1,183 @@
+
+default:
+  use_ycrcb: False
+  seginit:
+    type: circle
+    radius: 5
+  save:
+    init: true
+    image: true
+    output: true
+    video: true
+    loss: false
+  trainable: 
+    bg: False
+    record: True
+    stroke: False
+  num_segments: 2
+  num_iter: 150
+  lr_base:
+    bg: 0.001
+    point: 1.
+    color: 0.00001
+    stroke_width: 0.5
+    stroke_color: 0.0
+  coord_init:
+    type: sparse
+  seed: 0
+  loss:
+    use_l1_loss: false
+    use_distance_weighted_loss: true
+    smoothness_loss_weight: 0.05
+    bis_loss_weight: null
+
+experiment_4x1:
+  path_schedule:
+    type: repeat
+    max_path: 1
+    schedule_each: 1
+
+
+experiment_5x1:
+  path_schedule:
+    type: repeat
+    max_path: 5
+    schedule_each: 1
+
+experiment_8x1:
+  path_schedule:
+    type: repeat
+    max_path: 8
+    schedule_each: 1
+
+experiment_16x1:
+  path_schedule:
+    type: repeat
+    max_path: 16
+    schedule_each: 1
+
+experiment_32x1:
+  path_schedule:
+    type: repeat
+    max_path: 32
+    schedule_each: 1
+
+experiment_64x1:
+  path_schedule:
+    type: repeat
+    max_path: 64
+    schedule_each: 1
+
+experiment_1357:
+  path_schedule:
+    type: list
+    schedule: [1, 3, 5, 7]
+
+experiment_12223:
+  path_schedule:
+    type: list
+    schedule: [1, 2, 2, 2, 3]
+
+
+experiment_4481616:
+  path_schedule:
+    type: list
+    schedule: [4, 4, 8, 16, 16]
+
+experiment_448161616:
+  path_schedule:
+    type: list
+    schedule: [4, 4, 8, 16, 16, 16]
+
+experiment_87654321:
+  path_schedule:
+    type: list
+    schedule: [8, 7, 6, 5, 4, 3, 2, 1]
+
+experiment_1616:
+  path_schedule:
+    type: list
+    schedule: [16, 16]
+
+experiment_8816161632:
+  path_schedule:
+    type: list
+    schedule: [8, 8, 16, 16, 16, 32]
+
+experiment_44816:
+  path_schedule:
+    type: list
+    schedule: [4, 4, 8, 16]
+
+experiment_16x4:
+  path_schedule:
+    type: list
+    schedule: [16, 16, 16, 16]
+
+experiment_16x5:
+  path_schedule:
+    type: list
+    schedule: [16, 16, 16, 16, 16]
+
+experiment_16x16:
+  path_schedule:
+    type: list
+    schedule: [16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16]
+
+experiment_10:
+  path_schedule:
+    type: list
+    schedule: [1, 2, 3, 4]
+
+experiment_32:
+  path_schedule:
+    type: list
+    schedule: [8, 4, 4, 4, 4, 4, 4]
+
+
+experiment_4x32:
+  path_schedule:
+    type: list
+    schedule: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4]
+
+
+experiment_16x32:
+  path_schedule:
+    type: list
+    schedule: [16, 16, 16, 16, 16, 16, 16, 16, 32, 32, 32, 32, 64, 64, 64, 64]
+
+experiment_exp2_32:
+  path_schedule:
+    type: exp
+    base: 2
+    max_path: 32
+    max_path_per_iter: 16
+
+experiment_exp3_128:
+  path_schedule:
+    type: exp
+    base: 3
+    max_path: 128
+    max_path_per_iter: 27
+
+experiment_exp4_450:
+  path_schedule:
+    type: exp
+    base: 2
+    max_path: 450
+    max_path_per_iter: 2
+
+experiment_exp2_128:
+  path_schedule:
+    type: exp
+    base: 2
+    max_path: 128
+    max_path_per_iter: 32
+
+experiment_exp2_64:
+  path_schedule:
+    type: exp
+    base: 2
+    max_path: 64
+    max_path_per_iter: 16
+

@@ -1,0 +1,14 @@
+# CMake generation dependency list for this directory.
+C:/Users/asus/.conda/envs/live_conda/Library/share/cmake-3.29/Modules/CMakeCheckCompilerFlagCommonPatterns.cmake
+C:/Users/asus/.conda/envs/live_conda/Library/share/cmake-3.29/Modules/CMakeDependentOption.cmake
+C:/Users/asus/.conda/envs/live_conda/Library/share/cmake-3.29/Modules/CMakePackageConfigHelpers.cmake
+C:/Users/asus/.conda/envs/live_conda/Library/share/cmake-3.29/Modules/CheckCXXCompilerFlag.cmake
+C:/Users/asus/.conda/envs/live_conda/Library/share/cmake-3.29/Modules/CheckCXXSourceCompiles.cmake
+C:/Users/asus/.conda/envs/live_conda/Library/share/cmake-3.29/Modules/GNUInstallDirs.cmake
+C:/Users/asus/.conda/envs/live_conda/Library/share/cmake-3.29/Modules/Internal/CheckCompilerFlag.cmake
+C:/Users/asus/.conda/envs/live_conda/Library/share/cmake-3.29/Modules/Internal/CheckFlagCommonConfig.cmake
+C:/Users/asus/.conda/envs/live_conda/Library/share/cmake-3.29/Modules/Internal/CheckSourceCompiles.cmake
+C:/Users/asus/.conda/envs/live_conda/Library/share/cmake-3.29/Modules/WriteBasicConfigVersionFile.cmake
+C:/Users/asus/PycharmProjects/text2vecImg/LIVE-Layerwise-Image-Vectorization/DiffVG/pybind11/CMakeLists.txt
+C:/Users/asus/PycharmProjects/text2vecImg/LIVE-Layerwise-Image-Vectorization/DiffVG/pybind11/tools/pybind11Common.cmake
+C:/Users/asus/PycharmProjects/text2vecImg/LIVE-Layerwise-Image-Vectorization/DiffVG/pybind11/tools/pybind11NewTools.cmake
