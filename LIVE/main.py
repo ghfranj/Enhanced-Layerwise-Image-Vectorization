@@ -1,4 +1,5 @@
 import pydiffvg
+import time
 import cv2
 import matplotlib.pyplot as plt
 from tqdm import tqdm
@@ -15,8 +16,11 @@ gamma = 1.0
 from utils import *
 from functions import *
 
+pydiffvg.set_print_timing(False)
 if __name__ == "__main__":
 
+    final_l2_loss = 0.0
+    start_time = time.time()
     gt, cfg, para_bg, h, w, path_schedule, pathn_record, shapes_record, para_stroke_width, para_stroke_color, \
         shape_groups_record, render, device  = make_configs()
     ##################
@@ -29,7 +33,7 @@ if __name__ == "__main__":
     pos_init_method = Contour_path_init(
         para_bg.view(1, -1, 1, 1).repeat(1, 1, h, w), gt)
 
-    lrlambda_f = linear_decay_lrlambda_f(cfg.num_iter, 0.2)
+    lrlambda_f = linear_decay_lrlambda_f(cfg.num_iter, 0.05)
     optim_schedular_dict = {}
     prev_img = None
     img = None
@@ -150,15 +154,19 @@ if __name__ == "__main__":
                 print("we are using ycrcb")
                 loss = ((x-gt)*(color_reweight.view(1, -1, 1, 1)))**2
             else:
-                loss = ((x-gt)**2).sum((0,1))
+                loss = ((x-gt)**2).sum(1)
+
+                final_l2_loss = loss.mean().item()
+                print('final_l2_loss: ' ,final_l2_loss)
                 # euc_dis[euc_dis>=0.08]*=10
-                loss[loss>0.02]+= 10
+                loss[loss>0.002]+= 10
+                epsilon = 1e-8
                 loss = loss**4
             #overlap loss
             prev_loss = ((prev_img - gt)**2).sum(1)
             curr_loss = ((x - gt)**2).sum(1)
 
-            overlap_loss = torch.sum(curr_loss[((curr_loss > prev_loss) & (prev_loss < 0.05))]) * 0.5
+            overlap_loss = torch.sum(curr_loss[((curr_loss > prev_loss) & (prev_loss < 0.02))]) #* 0.5
             print("overlap_loss: ", overlap_loss.item())
             if cfg.loss.use_l1_loss:
                 loss = abs(x-gt)
@@ -225,7 +233,7 @@ if __name__ == "__main__":
             if loss_weight is None:
                 loss = loss.sum(1).mean() + overlap_loss.mean()
             else:
-                loss = (loss*loss_weight).mean() + overlap_loss.mean()
+                loss = (loss*loss_weight).mean()*10 + overlap_loss.mean()
 
             # if (cfg.loss.bis_loss_weight is not None)  and (cfg.loss.bis_loss_weight > 0):
             #     loss_bis = bezier_intersection_loss(point_var[0]) * cfg.loss.bis_loss_weight
@@ -311,3 +319,11 @@ if __name__ == "__main__":
             # shutil.rmtree(os.path.join(cfg.experiment_dir, "video-png"))
 
     print("The last loss is: {}".format(loss.item()))
+    end_time = time.time()  # Capture end time
+    elapsed_time = end_time - start_time  # Calculate elapsed time
+    print(f"Total time taken for the process: {elapsed_time:.2f} seconds")
+    log_dir = cfg.experiment_dir
+    log_file_path = os.path.join(log_dir, "training_time_log.txt")
+    # Write the total time to the log file
+    with open(log_file_path, "a") as log_file:
+        log_file.write(f"Total time for the process: {elapsed_time:.2f} seconds\n and l2 loss: {final_l2_loss}")

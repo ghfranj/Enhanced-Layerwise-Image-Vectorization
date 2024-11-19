@@ -14,14 +14,14 @@ default:
     bg: False
     record: True
     stroke: False
-  num_segments: 2
-  num_iter: 150
+  num_segments: 12
+  num_iter: 100
   lr_base:
     bg: 0.001
-    point: 1.
-    color: 0.00001
-    stroke_width: 0.5
-    stroke_color: 0.0
+    point: 2.
+    color: 0.0
+    stroke_width: 1.0
+    stroke_color: 1.0
   coord_init:
     type: sparse
   seed: 0
@@ -94,6 +94,11 @@ experiment_87654321:
     type: list
     schedule: [8, 7, 6, 5, 4, 3, 2, 1]
 
+experiment_164444:
+  path_schedule:
+    type: list
+    schedule: [16, 4, 4, 4, 4]
+
 experiment_1616:
   path_schedule:
     type: list
@@ -122,7 +127,7 @@ experiment_16x5:
 experiment_16x16:
   path_schedule:
     type: list
-    schedule: [16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16]
+    schedule: [8, 8, 8, 8, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16]
 
 experiment_10:
   path_schedule:
@@ -132,8 +137,12 @@ experiment_10:
 experiment_32:
   path_schedule:
     type: list
-    schedule: [8, 4, 4, 4, 4, 4, 4]
+    schedule: [4, 4, 4, 4, 4, 4, 4, 4]
 
+experiment_64:
+  path_schedule:
+    type: list
+    schedule: [4, 4, 8, 16, 16, 16]
 
 experiment_4x32:
   path_schedule:
@@ -151,6 +160,13 @@ experiment_exp2_32:
     type: exp
     base: 2
     max_path: 32
+    max_path_per_iter: 16
+
+experiment_exp2_64:
+  path_schedule:
+    type: exp
+    base: 2
+    max_path: 64
     max_path_per_iter: 16
 
 experiment_exp3_128:
@@ -174,10 +190,4 @@ experiment_exp2_128:
     max_path: 128
     max_path_per_iter: 32
 
-experiment_exp2_64:
-  path_schedule:
-    type: exp
-    base: 2
-    max_path: 64
-    max_path_per_iter: 16
 
