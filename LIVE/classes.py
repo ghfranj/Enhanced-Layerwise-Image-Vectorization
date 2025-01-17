@@ -1,3 +1,5 @@
+import math
+
 import cv2
 from utils import get_sdf
 from skopt.space import Categorical
@@ -9,8 +11,9 @@ last_pred = None
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
-
-
+from skopt import forest_minimize
+from skopt.space import Categorical, Real, Integer
+fixed_attempts = 0
 def plot_img(img, title=None):
     if torch.is_tensor(img):
         img = img.detach().cpu().numpy()  # Convert PyTorch tensor to NumPy array
@@ -59,7 +62,7 @@ class Contour_path_init():
 
         if format == '[bs x c x 2D]':
             # Move the difference calculation to the GPU
-            self.map = ((self.pred[0] - self.gt[0]) ** 2).sum(0)
+            self.map = ((self.pred[0] - self.gt[0])**2).sum(0)
             self.reference_gt = self.gt[0].cpu().numpy().transpose(1, 2,
                                                                    0)  # Keep this part on CPU for NumPy compatibility
         elif format == '[2D x c]':
@@ -69,7 +72,7 @@ class Contour_path_init():
         else:
             raise ValueError("Invalid format specified.")
 
-        self.loss = 1e10
+        self.loss = torch.tensor([1e10], device= self.pred.device)
         self.format = format
     def ensure_distinct_and_multiple_of_three(self, points):
         # Ensure points are on the GPU
@@ -77,10 +80,10 @@ class Contour_path_init():
 
         num_points = points.shape[0]
         all_points = []
-        targ_num_points = min(int(num_points/10) + (3-int(num_points/10)%3), 90)
+        targ_num_points =  int(num_points/2.1**math.log10(num_points)) + (3-int(2.1**math.log10(num_points))%2) # min(int(num_points**0.6) + (3-int(num_points**0.6)%2), 84)
         if targ_num_points <24:
             targ_num_points = 24
-        print(num_points, '================')
+        print(num_points, targ_num_points, '================')
         if num_points > targ_num_points:
             total_num = 0
             skip = -(num_points // -targ_num_points)
@@ -124,11 +127,14 @@ class Contour_path_init():
 
         return border_points
 
-    def calc_mean_color(self, component_binary=None, k=6, masked_pixels=None, mask=None, attempts=0):
+    def calc_mean_color(self, component_binary=None, k=7, masked_pixels=None, mask=None, attempts=0):
         if masked_pixels is None:
             # Extract the mask region from the ground truth image (make sure it's on the GPU)
             masked_pixels = self.gt_img[component_binary == 1].cuda() if not self.gt_img.is_cuda else self.gt_img[
                 component_binary == 1]
+        print('len(masked_pixels)', len(masked_pixels))
+        # if len(masked_pixels) < 25:
+        #     return np.array([0, 0, 0])
 
         if len(masked_pixels.shape) > 2:
             if mask is not None:
@@ -160,13 +166,16 @@ class Contour_path_init():
 
         return most_frequent_color
 
-    def optimize_params_bayesian(self, num_iter=25, format='[bs x c x 2D]', attempts=0):
+    from skopt import forest_minimize  # Import forest_minimize instead of gp_minimize
+    from skopt.space import Categorical  # Ensure this is imported for parameter space
+
+    def optimize_params_bayesian(self, num_iter=20, format='[bs x c x 2D]', attempts=0):
         def calculate_loss(quantile_interval, nodiff_thres, kernel_size, opacity, self, format='[bs x c x 2D]'):
             # Ensure tensors are on the correct device (GPU or CPU)
             device = self.pred.device
 
             if format == '[bs x c x 2D]':
-                map = ((self.pred[0] - self.gt[0]) ** 2).sum(0)
+                map = torch.abs(self.pred[0] - self.gt[0]).sum(0)**2
             elif format == '[2D x c]':
                 map = (torch.abs(self.pred - self.gt)).sum(-1)
             else:
@@ -191,31 +200,21 @@ class Contour_path_init():
             map = torch_digitize(map, quantized_interval)
 
             map = map.clamp(0, 255).to(torch.uint8)
-            dilate = False
-            if kernel_size>0:
-                dilate = True
             # Apply Morphological Operations (Erosion followed by Dilation)
-            # if attempts <=1:
-            #     kernel = np.ones((2, 2), dtype=np.uint8)
-            # elif attempts ==2:
-            #     kernel = np.ones((3, 3), dtype=np.uint8)
-            # elif attempts ==3:
-            #     kernel = np.ones((5, 5), dtype=np.uint8)
-            # elif attempts >3:
             kernel = np.ones((np.abs(kernel_size), np.abs(kernel_size)), dtype=np.uint8)
 
-            if dilate:
-                if kernel_size <0:
-                    map = cv2.dilate(map, kernel, iterations=1)
-                    map = cv2.erode(map.cpu().numpy(), kernel, iterations=1)
+            if kernel_size > 0:
+                if kernel_size < 0:
+                    map = cv2.dilate(map.cpu().numpy(), kernel, iterations=1)
+                    map = cv2.erode(map, kernel, iterations=1)
                 else:
                     map = cv2.erode(map.cpu().numpy(), kernel, iterations=1)
                     map = cv2.dilate(map, kernel, iterations=1)
-            # plot_img(map)
+
             idcnt = {}
             map = torch.tensor(map, dtype=torch.float32,
                                device=torch.device("cuda" if torch.cuda.is_available() else "cpu"))
-            # Now apply torch.unique on map
+
             for idi in sorted(torch.unique(map)):
                 idcnt[idi.item()] = (map == idi).sum()
 
@@ -229,57 +228,17 @@ class Contour_path_init():
                 i -= 1
                 target_id = max(idcnt, key=idcnt.get)
 
-                if is_first_path:
-                    num_check = 1
-                    # Slice the first and last 5 rows and columns
-                    top_rows = self.gt[:, :, :num_check, :].cpu().numpy()
-                    bottom_rows = self.gt[:, :, -num_check:, :].cpu().numpy()
-                    left_columns = self.gt[:, :, :, :num_check].cpu().numpy()
-                    right_columns = self.gt[:, :, :, -num_check:].cpu().numpy()
-
-                    # Apply threshold for white background check
-                    threshold = 0.8
-                    is_white_background = (
-                            np.mean(top_rows) >= threshold and
-                            np.mean(bottom_rows) >= threshold and
-                            np.mean(left_columns) >= threshold and
-                            np.mean(right_columns) >= threshold
-                    )
-                print(is_white_background)
-                # if not is_white_background:
-                if is_first_path and not is_white_background:
-                    binary_pred = (map == target_id) * 255
-                    # If binary_pred is a PyTorch tensor, convert it to a NumPy array
-                    if isinstance(binary_pred, torch.Tensor):
-                        binary_pred = binary_pred.cpu().numpy()
-
-                    # Ensure it’s single-channel by squeezing any extra dimensions
-                    binary_pred = np.squeeze(binary_pred)
-
-                    # Convert to 8-bit unsigned integer if needed
-                    binary_pred = binary_pred.astype(np.uint8)
-
-                    # Now apply adaptiveThreshold
-                    binary_pred = cv2.adaptiveThreshold(
-                        binary_pred, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 51, 2
-                    )
-                    _, component, cstats, ccenter = cv2.connectedComponentsWithStats(
-                        binary_pred.astype(np.uint8), connectivity=4
-                    )
-
-                else:
-                    _, component, cstats, ccenter = cv2.connectedComponentsWithStats(
-                        (map == target_id).to(torch.uint8).cpu().numpy(), connectivity=4
-                    )
+                _, component, cstats, ccenter = cv2.connectedComponentsWithStats(
+                    (map == target_id).to(torch.uint8).cpu().numpy(), connectivity=4
+                )
 
                 csize = [ci[-1] for ci in cstats[1:]]
                 target_cid = csize.index(max(csize)) + 1
 
-                # Calculate border points and points closer to center from borders
                 component_binary = (component == target_cid).astype(np.uint8)
                 loss, mean_color, pred_filled = self.calc_l2(component_binary, opacity, attempts)
                 component_binary = binary_fill_holes(component_binary).astype(np.uint8)
-                if loss <= self.loss:
+                if loss < self.loss:
                     self.component_binary = component_binary
                     self.loss = loss
                     self.best_color = mean_color
@@ -292,10 +251,11 @@ class Contour_path_init():
 
             return loss.item()
 
+        diff_map_thres = torch.abs(self.pred[0] - self.gt[0]).sum(0)**2# ((self.pred[0] - self.gt[0]) ** 2).sum(0)
         # Define the parameter space
         space = [
-            Categorical(list(range(10, 2701, 10)), name='quantile_interval'),
-            Categorical(list(np.arange(0.0001, 1.0, 0.05)), name='nodiff_thres'),
+            Integer(10,2700, name='quantile_interval'),
+            Real(diff_map_thres.min().item()/2,diff_map_thres.max().item(), prior='uniform', name='nodiff_thres'),
             Categorical([-9, -7, -5, -3, -2, 0, 2, 3, 5, 7, 9], name='kernel_size'),
         ]
 
@@ -312,13 +272,13 @@ class Contour_path_init():
             # Calculate loss and return it
             return calculate_loss(quantile_interval, nodiff_thres, kernel_size, opacity, self, format)
 
-        # Run Bayesian Optimization
-        res = gp_minimize(
+        # Run Bayesian Optimization with forest_minimize
+        res = forest_minimize(
             objective,  # Objective function
             space,  # Parameter space
             n_calls=num_iter,  # Number of iterations
             verbose=False,  # Display optimization progress
-            kappa=2.96 + attempts
+            base_estimator="ET",  # Use Extra Trees as the estimator
         )
 
         # Retrieve the best found parameters
@@ -362,16 +322,21 @@ class Contour_path_init():
 
         mean = masked_weights2.mean()
         max_val = masked_weights2.max()
-        if masked_weights.sum()==0 and attempts > 1:
+        global fixed_attempts
+        if attempts>1:
+            fixed_attempts = 1
+        if attempts>2:
+            fixed_attempts = 2
+        if masked_weights.sum()==0 :#and fixed_attempts == 1:
             masked_weights = masked_weights2.clone()
             masked_weights[(masked_weights < mean / 2) | (masked_weights > 0.99 * max_val + 0.01 * mean)] = 0
             masked_weights[masked_weights != 0] = 1
 
-        if masked_weights.sum()==0 and attempts > 3:
+        if masked_weights.sum()==0 :#and fixed_attempts == 2:
             masked_weights = masked_weights2
             masked_weights[masked_weights != 0] = 1
             if masked_weights.sum()<15:
-                return torch.tensor([1e30], device=device), 0, 0
+                return torch.tensor([1e10], device=device), 0, 0
         gt_tensor = torch.tensor(self.gt, dtype=torch.float32, device=device, requires_grad=False)
         pred_tensor = torch.tensor(self.pred, dtype=torch.float32, device=device, requires_grad=False)
         mean_color = torch.tensor(
@@ -385,7 +350,7 @@ class Contour_path_init():
         try:
             mean_color_expanded = mean_color.view(1, 3, 1, 1)  # Shape: (1, 3, 1, 1)
         except:
-            return torch.tensor([1e30], device=device), 0, 0
+            return torch.tensor([1e10], device=device), 0, 0
 
         mean_color_filled = mask_tensor[None, :, :] * mean_color_expanded  # Shape: (1, 3, H, W)
         mask_expanded = mask_tensor[None, :, :]  # Expand mask to (1, 1, H, W)
@@ -394,15 +359,16 @@ class Contour_path_init():
         pred_filled = pred_tensor * (1 - mask_expanded * opacity) + mean_color_filled * opacity
         diff_tensor = ((gt_tensor - pred_filled) ** 2).sum((0, 1))
         real_pred_filled = pred_tensor * (1 - real_mask_expanded * opacity) + real_mean_color_filled * opacity
+        # plot_img(real_pred_filled[0])
         # Calculate overlap loss
         prev_loss = ((gt_tensor - pred_tensor) ** 2).sum((0, 1))
-        overlap_loss = torch.sum(diff_tensor[(diff_tensor > prev_loss) & (prev_loss < 0.1)]) * 10
+        overlap_loss = torch.sum(diff_tensor[(diff_tensor > prev_loss) & (prev_loss < 0.1)]) #* 10
 
-        if diff_tensor.sum() >= prev_loss.sum():
-            return torch.tensor([1e30], device=device), 0, 0
-
+        if diff_tensor.sum() >= prev_loss.sum(): #and self.loss >= torch.tensor([1e10], device=device):
+            return torch.tensor([1e10], device=device), 0, 0
+        # diff_tensor[diff_tensor>0.01] = 1
         # Compute loss with additional penalties
-        loss = diff_tensor.sum() + overlap_loss.sum() + 0.1 * torch.sum(mask_tensor == 0)
+        loss = diff_tensor.sum() + overlap_loss.sum()*0.02 + 0.01 * torch.sum(mask_tensor == 0)
         print("Loss:", loss.item(), diff_tensor.sum().item(), overlap_loss.sum().item(),
               torch.sum(mask_tensor == 0).item())
         torch.cuda.empty_cache()
@@ -411,7 +377,7 @@ class Contour_path_init():
         global all_attempts
         global last_pred
         self.attempts = all_attempts
-        if self.attempts < 5:
+        if self.attempts < 7:
             self.attempts = 0
         i = 0
         if last_pred is None:
@@ -419,14 +385,14 @@ class Contour_path_init():
                 with torch.no_grad():
                     self.optimize_params_bayesian(format=self.format, attempts=self.attempts)
                     torch.cuda.empty_cache()
-                if self.attempts <5:
+                if self.attempts <7:
                     self.attempts+=1
                 i+=1
-                if i ==6:
+                if i ==8:
                     break
         else:
             self.component_binary = last_pred
-        if i == 6:
+        if i == 8:
             last_pred = self.component_binary
             self.opacity = 0
         component_binary = self.component_binary

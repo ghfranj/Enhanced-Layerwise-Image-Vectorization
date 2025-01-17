@@ -57,19 +57,19 @@ if(NOT generated_file)
 endif()
 
 # Set these up as variables to make reading the generated file easier
-set(CMAKE_COMMAND "C:/Users/asus/.conda/envs/live_conda/Library/bin/cmake.exe") # path
-set(source_file "C:/Users/asus/PycharmProjects/text2vecImg/LIVE-Layerwise-Image-Vectorization/DiffVG/diffvg.cpp") # path
-set(NVCC_generated_dependency_file "C:/Users/asus/PycharmProjects/text2vecImg/LIVE-Layerwise-Image-Vectorization/DiffVG/build/temp.win-amd64-cpython-310/Release/CMakeFiles/diffvg.dir//diffvg_generated_diffvg.cpp.obj.NVCC-depend") # path
-set(cmake_dependency_file "C:/Users/asus/PycharmProjects/text2vecImg/LIVE-Layerwise-Image-Vectorization/DiffVG/build/temp.win-amd64-cpython-310/Release/CMakeFiles/diffvg.dir//diffvg_generated_diffvg.cpp.obj.depend") # path
-set(CUDA_make2cmake "C:/Users/asus/.conda/envs/live_conda/Library/share/cmake-3.29/Modules/FindCUDA/make2cmake.cmake") # path
-set(CUDA_parse_cubin "C:/Users/asus/.conda/envs/live_conda/Library/share/cmake-3.29/Modules/FindCUDA/parse_cubin.cmake") # path
+set(CMAKE_COMMAND "C:/Users/asus/.conda/envs/live/Library/bin/cmake.exe") # path
+set(source_file "C:/Users/asus/PycharmProjects/text2vecImg/My-LIVE/LIVE-Layerwise-Image-Vectorization/DiffVG/diffvg.cpp") # path
+set(NVCC_generated_dependency_file "C:/Users/asus/PycharmProjects/text2vecImg/My-LIVE/LIVE-Layerwise-Image-Vectorization/DiffVG/build/temp.win-amd64-cpython-310/Release/CMakeFiles/diffvg.dir//diffvg_generated_diffvg.cpp.obj.NVCC-depend") # path
+set(cmake_dependency_file "C:/Users/asus/PycharmProjects/text2vecImg/My-LIVE/LIVE-Layerwise-Image-Vectorization/DiffVG/build/temp.win-amd64-cpython-310/Release/CMakeFiles/diffvg.dir//diffvg_generated_diffvg.cpp.obj.depend") # path
+set(CUDA_make2cmake "C:/Users/asus/.conda/envs/live/Library/share/cmake-3.31/Modules/FindCUDA/make2cmake.cmake") # path
+set(CUDA_parse_cubin "C:/Users/asus/.conda/envs/live/Library/share/cmake-3.31/Modules/FindCUDA/parse_cubin.cmake") # path
 set(build_cubin OFF) # bool
 set(CUDA_HOST_COMPILER "$(VCInstallDir)Tools/MSVC/$(VCToolsVersion)/bin/Host$(Platform)/$(PlatformTarget)") # path
 # We won't actually use these variables for now, but we need to set this, in
 # order to force this file to be run again if it changes.
-set(generated_file_path "C:/Users/asus/PycharmProjects/text2vecImg/LIVE-Layerwise-Image-Vectorization/DiffVG/build/temp.win-amd64-cpython-310/Release/CMakeFiles/diffvg.dir//$(Configuration)") # path
-set(generated_file_internal "C:/Users/asus/PycharmProjects/text2vecImg/LIVE-Layerwise-Image-Vectorization/DiffVG/build/temp.win-amd64-cpython-310/Release/CMakeFiles/diffvg.dir//$(Configuration)/diffvg_generated_diffvg.cpp.obj") # path
-set(generated_cubin_file_internal "C:/Users/asus/PycharmProjects/text2vecImg/LIVE-Layerwise-Image-Vectorization/DiffVG/build/temp.win-amd64-cpython-310/Release/CMakeFiles/diffvg.dir//$(Configuration)/diffvg_generated_diffvg.cpp.obj.cubin.txt") # path
+set(generated_file_path "C:/Users/asus/PycharmProjects/text2vecImg/My-LIVE/LIVE-Layerwise-Image-Vectorization/DiffVG/build/temp.win-amd64-cpython-310/Release/CMakeFiles/diffvg.dir//$(Configuration)") # path
+set(generated_file_internal "C:/Users/asus/PycharmProjects/text2vecImg/My-LIVE/LIVE-Layerwise-Image-Vectorization/DiffVG/build/temp.win-amd64-cpython-310/Release/CMakeFiles/diffvg.dir//$(Configuration)/diffvg_generated_diffvg.cpp.obj") # path
+set(generated_cubin_file_internal "C:/Users/asus/PycharmProjects/text2vecImg/My-LIVE/LIVE-Layerwise-Image-Vectorization/DiffVG/build/temp.win-amd64-cpython-310/Release/CMakeFiles/diffvg.dir//$(Configuration)/diffvg_generated_diffvg.cpp.obj.cubin.txt") # path
 
 set(CUDA_NVCC_EXECUTABLE "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.6/bin/nvcc.exe") # path
 set(CUDA_NVCC_FLAGS  -gencode arch=compute_50,code=sm_50 ;; ) # list
@@ -79,7 +79,7 @@ set(CUDA_NVCC_FLAGS_RELEASE  ; )
 set(CUDA_NVCC_FLAGS_MINSIZEREL  ; )
 set(CUDA_NVCC_FLAGS_RELWITHDEBINFO  ; )
 set(nvcc_flags -m64;-Ddiffvg_EXPORTS) # list
-set(CUDA_NVCC_INCLUDE_DIRS [==[C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.6/include;C:/Users/asus/.conda/envs/live_conda/Include;C:/ProgramData/anaconda3/include;C:/ProgramData/anaconda3/include;C:/Users/asus/PycharmProjects/text2vecImg/LIVE-Layerwise-Image-Vectorization/DiffVG/pybind11/include;C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.6/include;C:/Users/asus/.conda/envs/live_conda/include;C:/Users/asus/PycharmProjects/text2vecImg/LIVE-Layerwise-Image-Vectorization/DiffVG/pybind11/include;C:/Users/asus/.conda/envs/live_conda/include]==]) # list (needs to be in lua quotes to address backslashes)
+set(CUDA_NVCC_INCLUDE_DIRS [==[C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.6/include;C:/Users/asus/.conda/envs/live/Include;C:/ProgramData/anaconda3/include;C:/ProgramData/anaconda3/include;C:/Users/asus/PycharmProjects/text2vecImg/My-LIVE/LIVE-Layerwise-Image-Vectorization/DiffVG/pybind11/include;C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v11.6/include;C:/Users/asus/.conda/envs/live/include;C:/Users/asus/PycharmProjects/text2vecImg/My-LIVE/LIVE-Layerwise-Image-Vectorization/DiffVG/pybind11/include;C:/Users/asus/.conda/envs/live/include]==]) # list (needs to be in lua quotes to address backslashes)
 string(REPLACE "\\" "/" CUDA_NVCC_INCLUDE_DIRS "${CUDA_NVCC_INCLUDE_DIRS}")
 set(CUDA_NVCC_COMPILE_DEFINITIONS [==[COMPILE_WITH_CUDA]==]) # list (needs to be in lua quotes see #16510 ).
 set(format_flag "-c") # string

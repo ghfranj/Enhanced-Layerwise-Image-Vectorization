@@ -7,7 +7,7 @@ from torch.optim.lr_scheduler import  LambdaLR
 import warnings
 warnings.filterwarnings("ignore")
 
-from smoothness_loss import smoothness_loss
+from smoothness_loss import smoothness_loss, local_angle_penalty
 
 from classes import *
 
@@ -37,42 +37,58 @@ if __name__ == "__main__":
     optim_schedular_dict = {}
     prev_img = None
     img = None
+    path_group_num=0
     for path_idx, pathn in enumerate(path_schedule):
-        # print(path_idx, pathn)
-        # cfg.num_iter = 15 + min(10*path_idx,90)
-        # lrlambda_f = linear_decay_lrlambda_f(cfg.num_iter, 0.4)
-        # if path_idx ==0:
-        #     cfg.num_iter = 20
-        #     lrlambda_f = linear_decay_lrlambda_f(cfg.num_iter, 0.4)
-        # else:
-        #     cfg.num_iter = 100
-        #     lrlambda_f = linear_decay_lrlambda_f(cfg.num_iter, 0.4)
-
         loss_list = []
         print("=> Adding [{}] paths, [{}] ...".format(pathn, cfg.seginit.type))
         pathn_record.append(pathn)
         pathn_record_str = '-'.join([str(i) for i in pathn_record])
         # initialize new shapes related stuffs.
-        if cfg.trainable.stroke:
-            shapes, shape_groups, point_var, color_var, stroke_width_var, stroke_color_var = init_shapes(
-                pathn, cfg.num_segments, (h, w),
-                cfg.seginit, len(shapes_record),
-                pos_init_method,
-                trainable_stroke=True,
-                gt=gt, )
-            para_stroke_width[path_idx] = stroke_width_var
-            para_stroke_color[path_idx] = stroke_color_var
-        else:
-            shapes, shape_groups, point_var, color_var = init_shapes(
-                pathn, cfg.num_segments, (h, w),
-                cfg.seginit, len(shapes_record),
-                pos_init_method,
-                trainable_stroke=False,
-                gt=gt, )
-
+        # if cfg.trainable.stroke:
+        #     shapes, shape_groups, point_var, color_var, stroke_width_var, stroke_color_var = init_shapes(
+        #         pathn, cfg.num_segments, (h, w),
+        #         cfg.seginit, len(shapes_record),
+        #         pos_init_method,
+        #         trainable_stroke=True,
+        #         gt=gt, )
+        #     para_stroke_width[path_idx] = stroke_width_var
+        #     para_stroke_color[path_idx] = stroke_color_var
+        # else:
+        #     shapes, shape_groups, point_var, color_var = init_shapes(
+        #         pathn, cfg.num_segments, (h, w),
+        #         cfg.seginit, len(shapes_record),
+        #         pos_init_method,
+        #         trainable_stroke=False,
+        #         gt=gt, )
+        try:
+            if cfg.trainable.stroke:
+                shapes, shape_groups, point_var, color_var, stroke_width_var, stroke_color_var = init_shapes(
+                    pathn, cfg.num_segments, (h, w),
+                    cfg.seginit, len(shapes_record),
+                    pos_init_method,
+                    trainable_stroke=True,
+                    gt=gt, )
+                para_stroke_width[path_idx] = stroke_width_var
+                para_stroke_color[path_idx] = stroke_color_var
+            else:
+                shapes, shape_groups, point_var, color_var = init_shapes(
+                    pathn, cfg.num_segments, (h, w),
+                    cfg.seginit, len(shapes_record),
+                    pos_init_method,
+                    trainable_stroke=False,
+                    gt=gt, )
+        except:
+            end_time = time.time()  # Capture end time
+            elapsed_time = end_time - start_time  # Calculate elapsed time
+            print(f"Total time taken for the process: {elapsed_time:.2f} seconds")
+            log_dir = cfg.experiment_dir
+            log_file_path = os.path.join(log_dir, "training_time_log.txt")
+            # Write the total time to the log file
+            with open(log_file_path, "a") as log_file:
+                log_file.write(f"Total time for the process: {elapsed_time:.2f} seconds\n and l2 loss: {final_l2_loss}")
         shapes_record += shapes
         shape_groups_record += shape_groups
-
+        prev_iter_img = None
         if cfg.save.init:
             filename = os.path.join(
                 cfg.experiment_dir, "svg-init",
@@ -93,8 +109,7 @@ if __name__ == "__main__":
 
         pg = [{'params' : para[ki], 'lr' : cfg.lr_base[ki]} for ki in sorted(para.keys())]
 
-        optim = torch.optim.Adam(pg)
-
+        optim = torch.optim.Adam(pg, betas=(0.9, 0.999))
         if cfg.trainable.record:
             scheduler = LambdaLR(
                 optim, lr_lambda=lrlambda_f, last_epoch=-1)
@@ -113,27 +128,13 @@ if __name__ == "__main__":
             # Forward pass: render the image.
             scene_args = pydiffvg.RenderFunction.serialize_scene(
                 w, h, shapes_record, shape_groups_record)
-            img = render(w, h, 2, 2, t, None, *scene_args)
 
+            img = render(w, h, 2, 2, t, None, *scene_args)
             # Compose img with white background
             img = img[:, :, 3:4] * img[:, :, :3] + \
                 para_bg * (1 - img[:, :, 3:4])
             if prev_img is None:
-                prev_img = img.unsqueeze(0).permute(0, 3, 1, 2)
-            # plt.figure(figsize=(12, 6))
-            #
-            # # Plot Predictions
-            # plt.subplot(1, 2, 1)
-            # plt.imshow(img.cpu().detach().numpy())
-            # plt.title('Predictions')
-            #
-            # # Plot Ground Truth
-            # plt.subplot(1, 2, 2)
-            # plt.imshow(img2.cpu().detach().numpy())
-            # plt.title('Ground Truth')
-            #
-            # plt.tight_layout()
-            # plt.show()
+                prev_img = img.unsqueeze(0).permute(0, 3, 1, 2)  # HWC -> NCHW
             if cfg.save.video:
                 filename = os.path.join(
                     cfg.experiment_dir, "video-png",
@@ -147,27 +148,23 @@ if __name__ == "__main__":
                 pydiffvg.imwrite(imshow, filename, gamma=gamma)
 
             x = img.unsqueeze(0).permute(0, 3, 1, 2) # HWC -> NCHW
-            if prev_img is None:
-                prev_img = img.unsqueeze(0).permute(0, 3, 1, 2)
             if cfg.use_ycrcb:
                 color_reweight = torch.FloatTensor([255/219, 255/224, 255/255]).to(device)
                 print("we are using ycrcb")
                 loss = ((x-gt)*(color_reweight.view(1, -1, 1, 1)))**2
             else:
                 loss = ((x-gt)**2).sum(1)
-
                 final_l2_loss = loss.mean().item()
-                print('final_l2_loss: ' ,final_l2_loss)
-                # euc_dis[euc_dis>=0.08]*=10
-                loss[loss>0.002]+= 10
-                epsilon = 1e-8
-                loss = loss**4
+                # print('final_l2_loss: ' ,final_l2_loss)
             #overlap loss
-            prev_loss = ((prev_img - gt)**2).sum(1)
-            curr_loss = ((x - gt)**2).sum(1)
-
-            overlap_loss = torch.sum(curr_loss[((curr_loss > prev_loss) & (prev_loss < 0.02))]) #* 0.5
-            print("overlap_loss: ", overlap_loss.item())
+            overlap_loss = 0
+            if prev_img is not None:
+                prev_loss = ((prev_img - gt)**2).sum(1)
+                curr_loss = ((x - gt)**2).sum(1)
+                mask = ((curr_loss < prev_loss)&((curr_loss < 0.01))).expand_as(prev_img)
+                prev_img[mask] = x[mask]
+                overlap_loss = curr_loss[(curr_loss > prev_loss)].sum() * cfg.loss.overlap_weight #0.08
+                # print("overlap_loss: ", overlap_loss.item())
             if cfg.loss.use_l1_loss:
                 loss = abs(x-gt)
 
@@ -227,24 +224,24 @@ if __name__ == "__main__":
                 plt.close()
 
 
-
-
             # print("overlap loss is: ", overlap_loss.mean().item())
             if loss_weight is None:
-                loss = loss.sum(1).mean() + overlap_loss.mean()
+                loss = loss.sum(1).mean() + overlap_loss
             else:
-                loss = (loss*loss_weight).mean()*10 + overlap_loss.mean()
+                loss = (loss*loss_weight).mean()*10 + overlap_loss
 
             # if (cfg.loss.bis_loss_weight is not None)  and (cfg.loss.bis_loss_weight > 0):
             #     loss_bis = bezier_intersection_loss(point_var[0]) * cfg.loss.bis_loss_weight
             #     loss = loss + loss_bis
             if (cfg.loss.smoothness_loss_weight is not None) \
                     and (cfg.loss.smoothness_loss_weight > 0):
+                loss_smoothness = 0
                 loss_smoothness = smoothness_loss(point_var) * cfg.loss.smoothness_loss_weight
-                print("smoothness loss: ", loss_smoothness.item())
-                loss = loss + loss_smoothness
-
-
+                local_angle_loss = 0
+                # for points in point_var:
+                #     local_angle_loss+= local_angle_penalty(points)
+                # # print("smoothness loss: ", loss_smoothness.item())
+                # loss = loss + loss_smoothness + local_angle_loss
             loss_list.append(loss.item())
             t_range.set_postfix({'loss': loss.item()})
             loss.backward()
@@ -256,11 +253,12 @@ if __name__ == "__main__":
 
             for group in shape_groups_record:
                 group.fill_color.data.clamp_(0.0, 1.0)
-
-        prev_img = img.unsqueeze(0).permute(0, 3, 1, 2)  # HWC -> NCHW
+            prev_iter_img = x
+            # prev_img = img.unsqueeze(0).permute(0, 3, 1, 2)  # HWC -> NCHW
+        # prev_img = img.unsqueeze(0).permute(0, 3, 1, 2)  # HWC -> NCHW
         if cfg.loss.use_distance_weighted_loss:
             loss_weight_keep = loss_weight.detach().cpu().numpy() * 1
-
+        prev_img = prev_iter_img
         if not cfg.trainable.record:
             for _, pi in pg.items():
                 for ppi in pi:
@@ -317,7 +315,16 @@ if __name__ == "__main__":
                 out.write(img_array[iii])
             out.release()
             # shutil.rmtree(os.path.join(cfg.experiment_dir, "video-png"))
-
+        print("The last loss is: {}".format(final_l2_loss))
+        end_time = time.time()  # Capture end time
+        elapsed_time = end_time - start_time  # Calculate elapsed time
+        print(f"Total time taken for the process: {elapsed_time:.2f} seconds")
+        log_dir = cfg.experiment_dir
+        log_file_path = os.path.join(log_dir, f"training_time_log{path_group_num}.txt")
+        # Write the total time to the log file
+        with open(log_file_path, "a") as log_file:
+            log_file.write(f"Total time for the process: {elapsed_time:.2f} seconds\n and l2 loss: {final_l2_loss}")
+        path_group_num+=1
     print("The last loss is: {}".format(loss.item()))
     end_time = time.time()  # Capture end time
     elapsed_time = end_time - start_time  # Calculate elapsed time

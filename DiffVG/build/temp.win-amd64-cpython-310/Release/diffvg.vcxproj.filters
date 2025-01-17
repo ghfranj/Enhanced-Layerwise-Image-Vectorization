@@ -1,101 +1,101 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="C:\Users\asus\PycharmProjects\text2vecImg\LIVE-Layerwise-Image-Vectorization\DiffVG\atomic.cpp">
+    <ClCompile Include="C:\Users\asus\PycharmProjects\text2vecImg\My-LIVE\LIVE-Layerwise-Image-Vectorization\DiffVG\atomic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\asus\PycharmProjects\text2vecImg\LIVE-Layerwise-Image-Vectorization\DiffVG\color.cpp">
+    <ClCompile Include="C:\Users\asus\PycharmProjects\text2vecImg\My-LIVE\LIVE-Layerwise-Image-Vectorization\DiffVG\color.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\asus\PycharmProjects\text2vecImg\LIVE-Layerwise-Image-Vectorization\DiffVG\parallel.cpp">
+    <ClCompile Include="C:\Users\asus\PycharmProjects\text2vecImg\My-LIVE\LIVE-Layerwise-Image-Vectorization\DiffVG\parallel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\Users\asus\PycharmProjects\text2vecImg\LIVE-Layerwise-Image-Vectorization\DiffVG\shape.cpp">
+    <ClCompile Include="C:\Users\asus\PycharmProjects\text2vecImg\My-LIVE\LIVE-Layerwise-Image-Vectorization\DiffVG\shape.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\LIVE-Layerwise-Image-Vectorization\DiffVG\atomic.h">
+    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\My-LIVE\LIVE-Layerwise-Image-Vectorization\DiffVG\atomic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\LIVE-Layerwise-Image-Vectorization\DiffVG\color.h">
+    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\My-LIVE\LIVE-Layerwise-Image-Vectorization\DiffVG\color.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\LIVE-Layerwise-Image-Vectorization\DiffVG\cdf.h">
+    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\My-LIVE\LIVE-Layerwise-Image-Vectorization\DiffVG\cdf.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\LIVE-Layerwise-Image-Vectorization\DiffVG\cuda_utils.h">
+    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\My-LIVE\LIVE-Layerwise-Image-Vectorization\DiffVG\cuda_utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\LIVE-Layerwise-Image-Vectorization\DiffVG\diffvg.h">
+    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\My-LIVE\LIVE-Layerwise-Image-Vectorization\DiffVG\diffvg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\LIVE-Layerwise-Image-Vectorization\DiffVG\edge_query.h">
+    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\My-LIVE\LIVE-Layerwise-Image-Vectorization\DiffVG\edge_query.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\LIVE-Layerwise-Image-Vectorization\DiffVG\filter.h">
+    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\My-LIVE\LIVE-Layerwise-Image-Vectorization\DiffVG\filter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\LIVE-Layerwise-Image-Vectorization\DiffVG\matrix.h">
+    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\My-LIVE\LIVE-Layerwise-Image-Vectorization\DiffVG\matrix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\LIVE-Layerwise-Image-Vectorization\DiffVG\parallel.h">
+    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\My-LIVE\LIVE-Layerwise-Image-Vectorization\DiffVG\parallel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\LIVE-Layerwise-Image-Vectorization\DiffVG\pcg.h">
+    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\My-LIVE\LIVE-Layerwise-Image-Vectorization\DiffVG\pcg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\LIVE-Layerwise-Image-Vectorization\DiffVG\ptr.h">
+    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\My-LIVE\LIVE-Layerwise-Image-Vectorization\DiffVG\ptr.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\LIVE-Layerwise-Image-Vectorization\DiffVG\sample_boundary.h">
+    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\My-LIVE\LIVE-Layerwise-Image-Vectorization\DiffVG\sample_boundary.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\LIVE-Layerwise-Image-Vectorization\DiffVG\scene.h">
+    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\My-LIVE\LIVE-Layerwise-Image-Vectorization\DiffVG\scene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\LIVE-Layerwise-Image-Vectorization\DiffVG\shape.h">
+    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\My-LIVE\LIVE-Layerwise-Image-Vectorization\DiffVG\shape.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\LIVE-Layerwise-Image-Vectorization\DiffVG\solve.h">
+    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\My-LIVE\LIVE-Layerwise-Image-Vectorization\DiffVG\solve.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\LIVE-Layerwise-Image-Vectorization\DiffVG\vector.h">
+    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\My-LIVE\LIVE-Layerwise-Image-Vectorization\DiffVG\vector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\LIVE-Layerwise-Image-Vectorization\DiffVG\within_distance.h">
+    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\My-LIVE\LIVE-Layerwise-Image-Vectorization\DiffVG\within_distance.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\LIVE-Layerwise-Image-Vectorization\DiffVG\winding_number.h">
+    <ClInclude Include="C:\Users\asus\PycharmProjects\text2vecImg\My-LIVE\LIVE-Layerwise-Image-Vectorization\DiffVG\winding_number.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\Users\asus\PycharmProjects\text2vecImg\LIVE-Layerwise-Image-Vectorization\DiffVG\diffvg.cpp">
+    <CustomBuild Include="C:\Users\asus\PycharmProjects\text2vecImg\My-LIVE\LIVE-Layerwise-Image-Vectorization\DiffVG\diffvg.cpp">
       <Filter>Source Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="C:\Users\asus\PycharmProjects\text2vecImg\LIVE-Layerwise-Image-Vectorization\DiffVG\scene.cpp">
+    <CustomBuild Include="C:\Users\asus\PycharmProjects\text2vecImg\My-LIVE\LIVE-Layerwise-Image-Vectorization\DiffVG\scene.cpp">
       <Filter>Source Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="C:\Users\asus\PycharmProjects\text2vecImg\LIVE-Layerwise-Image-Vectorization\DiffVG\CMakeLists.txt" />
+    <CustomBuild Include="C:\Users\asus\PycharmProjects\text2vecImg\My-LIVE\LIVE-Layerwise-Image-Vectorization\DiffVG\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Object Include="C:\Users\asus\PycharmProjects\text2vecImg\LIVE-Layerwise-Image-Vectorization\DiffVG\build\temp.win-amd64-cpython-310\Release\CMakeFiles\diffvg.dir\$(Configuration)\diffvg_generated_diffvg.cpp.obj">
+    <Object Include="C:\Users\asus\PycharmProjects\text2vecImg\My-LIVE\LIVE-Layerwise-Image-Vectorization\DiffVG\build\temp.win-amd64-cpython-310\Release\CMakeFiles\diffvg.dir\$(Configuration)\diffvg_generated_diffvg.cpp.obj">
       <Filter>Object Files</Filter>
     </Object>
-    <Object Include="C:\Users\asus\PycharmProjects\text2vecImg\LIVE-Layerwise-Image-Vectorization\DiffVG\build\temp.win-amd64-cpython-310\Release\CMakeFiles\diffvg.dir\$(Configuration)\diffvg_generated_scene.cpp.obj">
+    <Object Include="C:\Users\asus\PycharmProjects\text2vecImg\My-LIVE\LIVE-Layerwise-Image-Vectorization\DiffVG\build\temp.win-amd64-cpython-310\Release\CMakeFiles\diffvg.dir\$(Configuration)\diffvg_generated_scene.cpp.obj">
       <Filter>Object Files</Filter>
     </Object>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{AB0C6438-F4B1-3B5E-852C-B9E49B112A25}</UniqueIdentifier>
+      <UniqueIdentifier>{CD4DB0A6-8F78-37A5-8C16-756D7A564D80}</UniqueIdentifier>
     </Filter>
     <Filter Include="Object Files">
-      <UniqueIdentifier>{EA667558-FCAC-3589-B976-98E8A96E4541}</UniqueIdentifier>
+      <UniqueIdentifier>{212CAA82-C6E7-3116-A46B-AC254E627DB0}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{DBBE6F74-E00F-3864-92E1-FE6516913C99}</UniqueIdentifier>
+      <UniqueIdentifier>{9741837C-58A3-3F7B-BCE5-EE5EBCE968C4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
